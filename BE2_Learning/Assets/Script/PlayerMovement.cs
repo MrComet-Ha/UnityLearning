@@ -34,7 +34,7 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         float h = Input.GetAxisRaw("Horizontal") * 25;
-        rigid.AddForce(UnityEngine.Vector2.right * h * Time.deltaTime, ForceMode2D.Impulse);
+        rigid.AddForce(UnityEngine.Vector2.right * h * rigid.gravityScale * Time.deltaTime, ForceMode2D.Impulse);
         if(rigid.velocity.x > maxSpeed * Time.deltaTime){
             rigid.velocity = new UnityEngine.Vector2(maxSpeed * Time.deltaTime, rigid.velocity.y);
         }
