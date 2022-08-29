@@ -42,12 +42,10 @@ public class PlayerMovement : MonoBehaviour
             rigid.velocity = new UnityEngine.Vector2(maxSpeed * (-1f) * Time.deltaTime , rigid.velocity.y);
         }
         if(rigid.velocity.y < 0){
-            spr.isFall = true;
             RaycastHit2D onGround = Physics2D.Raycast(rigid.position,UnityEngine.Vector3.down, 1, LayerMask.GetMask("Platform"));
             if(onGround.collider != null){
                 if(onGround.distance < 0.5){
                     spr.isJump = false;
-                    spr.isFall = false;
                 }
             }
         }

@@ -8,7 +8,6 @@ public class PlayerAnime : MonoBehaviour
     Animator anim;
     public bool isRun;
     public bool isJump;
-    public bool isFall;
     void Awake()
     {
         spr = GetComponent<SpriteRenderer>();
@@ -20,7 +19,6 @@ public class PlayerAnime : MonoBehaviour
     {
         anim.SetBool("isRun", isRun);
         anim.SetBool("isJump",isJump);
-        anim.SetBool("isFall",isFall);
         if (Input.GetButtonDown("Horizontal"))
             spr.flipX = (Input.GetAxisRaw("Horizontal") == -1);
     }

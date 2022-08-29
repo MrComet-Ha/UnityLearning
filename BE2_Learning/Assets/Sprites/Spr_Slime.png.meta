@@ -70,7 +70,7 @@ TextureImporter:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
-    resizeAlgorithm: 1
+    resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
     compressionQuality: 50
@@ -121,8 +121,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 95bd4f635ac8a5c4aa4b529d308d1978
-      internalID: 258803457
+      spriteID: b6f15de48d1b9cb43bc41bb174db052b
+      internalID: 431322079
       vertices: []
       indices: 
       edges: []
@@ -142,8 +142,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7e76ea48ce3ae5343ace5c27f001f182
-      internalID: -1980017369
+      spriteID: 4cf11eb26d1d67a4391a7c0a4e748dc3
+      internalID: -2120415631
       vertices: []
       indices: 
       edges: []
@@ -163,8 +163,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e990accefc74b0f4f85fd805d07d6f1c
-      internalID: -1953227265
+      spriteID: b4d244e81a4b1744d98fce2bfa06066f
+      internalID: 1102527776
       vertices: []
       indices: 
       edges: []
@@ -184,8 +184,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 260e44fcd89738f4ebf5b450b5396aae
-      internalID: 1078942826
+      spriteID: 13eef3ca4cebc384fa21c79256b11e2d
+      internalID: -1685158617
       vertices: []
       indices: 
       edges: []
@@ -205,8 +205,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cf948f1f4ff66364da283deb2003dc69
-      internalID: 1853316467
+      spriteID: 51682590f55c7a7439e9b68d752c2705
+      internalID: -2049191562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spr_Slime_5
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 1
+        width: 25
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2940941eed71cae41a58c89e7b57682c
+      internalID: 620728054
       vertices: []
       indices: 
       edges: []
@@ -222,11 +243,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Spr_Slime_0: 258803457
-      Spr_Slime_4: 1853316467
-      Spr_Slime_2: -1953227265
-      Spr_Slime_1: -1980017369
-      Spr_Slime_3: 1078942826
+      Spr_Slime_0: 431322079
+      Spr_Slime_4: -2049191562
+      Spr_Slime_2: 1102527776
+      Spr_Slime_1: -2120415631
+      Spr_Slime_3: -1685158617
+      Spr_Slime_5: 620728054
   spritePackingTag: 
   pSDRemoveMatte: 0
   userData: 
