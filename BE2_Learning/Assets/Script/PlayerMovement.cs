@@ -9,6 +9,9 @@ public class PlayerMovement : MonoBehaviour
     public float maxSpeed;
     Rigidbody2D rigid;
     PlayerAnime spr;
+    public float h;
+    public float v;
+    
     void Awake()
     {
         rigid=GetComponent<Rigidbody2D>();
@@ -17,7 +20,6 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        float v = 8;
         if(Input.GetButtonDown("Jump") && spr.isJump == false){
             spr.isJump = true;
             rigid.AddForce(UnityEngine.Vector2.up * v, ForceMode2D.Impulse);
@@ -33,8 +35,9 @@ public class PlayerMovement : MonoBehaviour
     }
     void FixedUpdate()
     {
-        float h = Input.GetAxisRaw("Horizontal") * 25;
-        rigid.AddForce(UnityEngine.Vector2.right * h * rigid.gravityScale * Time.deltaTime, ForceMode2D.Impulse);
+        float hspeed = h;
+        hspeed *= Input.GetAxisRaw("Horizontal");
+        rigid.AddForce(UnityEngine.Vector2.right * hspeed * rigid.gravityScale * Time.deltaTime, ForceMode2D.Impulse);
         if(rigid.velocity.x > maxSpeed * Time.deltaTime){
             rigid.velocity = new UnityEngine.Vector2(maxSpeed * Time.deltaTime, rigid.velocity.y);
         }

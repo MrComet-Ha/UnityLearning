@@ -38,7 +38,9 @@
   <ItemGroup>
      <Compile Include="Assets\Script\PlayerMovement.cs" />
      <Compile Include="Assets\Script\PlayerAnime.cs" />
-     <Compile Include="Assets\Script\EnemyAI.cs" />
+     <Compile Include="Assets\Script\EnemySlimeAI.cs" />
+     <Compile Include="Assets\Script\EnemyWoodAI.cs" />
+     <Compile Include="Assets\Script\PlayerDamaged.cs" />
     <Reference Include="UnityEngine">
         <HintPath>D:\Unity2022.1.13f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>

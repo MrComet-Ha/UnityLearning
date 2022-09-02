@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyAI : MonoBehaviour
+public class EnemySlimeAI : MonoBehaviour
 {
     public int movement;
     int moveCool;
@@ -15,10 +15,20 @@ public class EnemyAI : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spr = GetComponent<SpriteRenderer>();
-        nextMove();
+        Invoke("nextMove",3);
     }
-
-    // Update is called once per frame
+    void Update(){
+        switch(movement){
+            case -1 : anim.SetBool("isJump", true);
+            spr.flipX = false;
+            break;
+            case 0 : anim.SetBool("isJump", false);
+            break;
+            case 1 : anim.SetBool("isJump", true);
+            spr.flipX = true;
+            break;
+        }
+    }    // Update is called once per frame
     void FixedUpdate()
     {
         if(anim.GetCurrentAnimatorStateInfo(0).IsName("AnimSlimeJumped") && movement != 0){
@@ -33,19 +43,6 @@ public class EnemyAI : MonoBehaviour
         }
     }
     void nextMove(){
-        switch(movement){
-            case -1 : anim.SetBool("isJump", true);
-            break;
-            case 0 : anim.SetBool("isJump", false);
-            break;
-            case 1 : anim.SetBool("isJump", true);
-            break;
-        }
-        if(movement == 1){
-            spr.flipX = true;
-        }
-        else
-            spr.flipX = false;
         movement = Random.Range(-1,2);
         Invoke("nextMove",1.5f);
     }
