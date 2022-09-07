@@ -19,7 +19,7 @@ public class PlayerAnime : MonoBehaviour
     {
         anim.SetBool("isRun", isRun);
         anim.SetBool("isJump",isJump);
-        if (Input.GetButtonDown("Horizontal"))
+        if (Input.GetButton("Horizontal"))
             spr.flipX = (Input.GetAxisRaw("Horizontal") == -1);
     }
 }

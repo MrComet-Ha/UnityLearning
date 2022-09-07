@@ -8,7 +8,9 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     public float maxSpeed;
     Rigidbody2D rigid;
+    UnityEngine.Vector3 startpoint;
     PlayerAnime spr;
+    PlayerSendData send;
     public float h;
     public float v;
     
@@ -16,13 +18,19 @@ public class PlayerMovement : MonoBehaviour
     {
         rigid=GetComponent<Rigidbody2D>();
         spr=GetComponent<PlayerAnime>();
+        send = GetComponent<PlayerSendData>();
+        startpoint = transform.position;
     }
-
+    void OnEnable()
+    {
+        Reposition();
+    }
     void Update()
     {
         if(Input.GetButtonDown("Jump") && spr.isJump == false){
             spr.isJump = true;
             rigid.AddForce(UnityEngine.Vector2.up * v, ForceMode2D.Impulse);
+            send.gm.SoundManagement("sndJUMP");
         }
         if(Input.GetButtonUp("Horizontal")){
             rigid.velocity = new UnityEngine.Vector2(rigid.velocity.normalized.x * 0.2f, rigid.velocity.y);
@@ -52,5 +60,9 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }
+    }
+    public void Reposition(){
+        rigid.velocity = UnityEngine.Vector2.zero;
+        transform.position = startpoint;
     }
 }

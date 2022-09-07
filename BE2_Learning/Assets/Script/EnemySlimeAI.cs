@@ -9,15 +9,34 @@ public class EnemySlimeAI : MonoBehaviour
     Rigidbody2D rigid;
     SpriteRenderer spr;
     Animator anim;
+    CapsuleCollider2D col;
+    Vector3 startingpoint;
     // Start is called before the first frame update
     void Awake()
     {
+        startingpoint = transform.position;
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spr = GetComponent<SpriteRenderer>();
+        col = GetComponent<CapsuleCollider2D>();
+    }
+    void OnEnable(){
+        if(transform.position != startingpoint)
+        {
+            transform.position = startingpoint;
+        }
+        spr.color = new Color(1,1,1,1);
+        spr.flipX = false;
+        spr.flipY = false;
+        col.enabled = true;
+        rigid.velocity=new Vector2(0,0);
         Invoke("nextMove",3);
     }
     void Update(){
+        if(!col.enabled){
+            CancelInvoke("nextMove");
+            movement = 0;
+        }
         switch(movement){
             case -1 : anim.SetBool("isJump", true);
             spr.flipX = false;

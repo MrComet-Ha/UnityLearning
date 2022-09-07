@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Monster
   - Platform
+  - Item
   layers:
   - Default
   - TransparentFX
@@ -14,12 +15,12 @@ TagManager:
   - Water
   - UI
   - Platform
-  - 
+  - Item
   - Enemy
   - Player
   - EnemyDmged
   - PlayerDmged
-  - 
+  - Finish
   - 
   - 
   - 

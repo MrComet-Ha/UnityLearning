@@ -9,6 +9,11 @@ public class PlayerDamaged : MonoBehaviour
     Rigidbody2D rigid;
     PlayerMovement plmove;
     PlayerAnime planim;
+    EnemyDestroy endmg;
+    PlayerSendData send;
+
+    public int killscore;
+    
     // Start is called before the first frame update
     void Awake()
     {
@@ -16,6 +21,8 @@ public class PlayerDamaged : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         plmove = GetComponent<PlayerMovement>();
         planim = GetComponent<PlayerAnime>();
+        endmg = GetComponent<EnemyDestroy>();
+        send = GetComponent<PlayerSendData>();
     }
     void Update(){
         
@@ -40,12 +47,26 @@ public class PlayerDamaged : MonoBehaviour
     void OnCollisionEnter2D(Collision2D other)
     {
         RaycastHit2D onHead = Physics2D.Raycast(rigid.position,UnityEngine.Vector3.down, 1, LayerMask.GetMask("Enemy"));
-        if(other.gameObject.tag == "Monster" && onHead.collider == null){
-            onDamaged(other.transform.position);
+        if(other.gameObject.tag == "Monster"){
+            if (onHead.collider == null){
+                onDamaged(other.transform.position);
+                send.gm.HPDamage(1);
+            }
+            else{
+                onAttack(other.transform);
+                send.gm.SendScore(killscore);
+            }
+            send.gm.SoundManagement("sndATK");
         }
-        else if(other.gameObject.tag == "Monster" && onHead.collider != null){
-            rigid.AddForce(UnityEngine.Vector2.up * plmove.v, ForceMode2D.Impulse);
+        else if(other.gameObject.tag == "Finish"){
+            send.gm.StageManagement(false);
         }
     }
-
+    void onAttack(Transform enemy){
+        rigid.AddForce(UnityEngine.Vector2.up * plmove.v, ForceMode2D.Impulse);
+        
+        EnemyDestroy endmg = enemy.GetComponent<EnemyDestroy>();
+        endmg.onDamaged();
+        
+    }
 }
