@@ -15,9 +15,9 @@ public class QuestManager : MonoBehaviour
     }
     
     void GenerateData(){
-        questList.Add(10, new QuestData("초면인데", new int[]{1000, 100, 300}));
-        questList.Add(20, new QuestData("안아줘요", new int[]{2000, 1000}));
-        questList.Add(30, new QuestData("퀘스트 종료", new int[]{0}));
+        questList.Add(10, new QuestData("초면에 무례한 여자.", new int[]{1000, 100, 300}));
+        questList.Add(20, new QuestData("안아줘요? 안아줘요!", new int[]{2000, 1000}));
+        questList.Add(30, new QuestData("퀘스트 없음", new int[]{0}));
     }
 
     public int GetQuestDiagIndex(int id){
@@ -40,7 +40,7 @@ public class QuestManager : MonoBehaviour
         questId += 10;
         questActIndex = 0;
     }
-    void ControlObject(){
+    public void ControlObject(){
         switch(questId){
             case 10 :
                 if(questActIndex == 2){
