@@ -33,13 +33,12 @@ public class EnemyMovement : MonoBehaviour
 
     void Awake(){
         items = new String[]{
+            "Coin",
             "Power",
             "Bomb",
             "Rapid",
             "Shot",
             "Heal",
-            "Coin",
-            "Sub"
         };
         sprRen = GetComponent<SpriteRenderer>();    
     }
@@ -122,33 +121,29 @@ public class EnemyMovement : MonoBehaviour
             if(ran < 12){
                 index = -1;
             }
-            else if(ran < 14){
+            else if(ran < 15){
                 //coin
                 index = 0;
             }
-            else if(ran < 16){
+            else if(ran < 17){
                 //power
                 index = 1;
             }
-            else if(ran < 18){
+            else if(ran < 19){
                 //bomb
                 index = 2;
             }
-            else if(ran < 20){
+            else if(ran < 21){
                 //rapid
                 index = 3;
             }
-            else if(ran < 22){
+            else if(ran < 23){
                 //shot
                 index = 4;
             }
-            else if(ran < 23){
+            else if(ran == 23){
                 //heal
                 index = 5;
-            }
-            else if(ran == 23){
-                //sub
-                index = 6;
             }
             if(index!=-1){
                 GameObject item = obj.CreateObj(items[index]);

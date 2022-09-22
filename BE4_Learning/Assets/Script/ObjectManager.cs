@@ -14,11 +14,11 @@ public class ObjectManager : MonoBehaviour
     public GameObject ShotPrefab;
     public GameObject HealPrefab;
     public GameObject CoinPrefab;
-    public GameObject SubPrefab;
     public GameObject EnemyBulletAPrefab;
     public GameObject EnemyBulletBPrefab;
     public GameObject PlayerBulletAPrefab;
     public GameObject PlayerBulletBPrefab;
+    public GameObject FollowerBulletPrefab;
 
     //Enemies
     GameObject[] enemyS;
@@ -32,13 +32,13 @@ public class ObjectManager : MonoBehaviour
     GameObject[] shot;
     GameObject[] heal;
     GameObject[] coin;
-    GameObject[] sub;
 
     //Bullets
     GameObject[] enemyBulletA;
     GameObject[] enemyBulletB;
     GameObject[] playerBulletA;
     GameObject[] playerBulletB;
+    GameObject[] followerBullet;
 
     public GameObject[] targetPool;
 
@@ -54,12 +54,12 @@ public class ObjectManager : MonoBehaviour
         shot = new GameObject[10];
         heal = new GameObject[10];
         coin = new GameObject[10];
-        sub = new GameObject[10];
 
         enemyBulletA = new GameObject[200];
         enemyBulletB = new GameObject[200];
         playerBulletA = new GameObject[100];
         playerBulletB = new GameObject[100];
+        followerBullet = new GameObject[200];
 
         Generate();
     }
@@ -101,10 +101,6 @@ public class ObjectManager : MonoBehaviour
             coin[i] = Instantiate(CoinPrefab);
             coin[i].SetActive(false);
         }
-        for(int i=0; i<sub.Length;i ++){
-            sub[i] = Instantiate(SubPrefab);
-            sub[i].SetActive(false);
-        }
         for(int i=0; i<enemyBulletA.Length;i ++){
             enemyBulletA[i] = Instantiate(EnemyBulletAPrefab);
             enemyBulletA[i].SetActive(false);
@@ -120,6 +116,10 @@ public class ObjectManager : MonoBehaviour
         for(int i=0; i<playerBulletB.Length;i ++){
             playerBulletB[i] = Instantiate(PlayerBulletBPrefab);
             playerBulletB[i].SetActive(false);
+        }
+        for(int i=0; i<followerBullet.Length;i ++){
+            followerBullet[i] = Instantiate(FollowerBulletPrefab);
+            followerBullet[i].SetActive(false);
         }
     }
 
@@ -152,9 +152,6 @@ public class ObjectManager : MonoBehaviour
             case "Coin": 
                 targetPool = coin;
                 break;
-            case "Sub": 
-                targetPool = sub;
-                break;
             case "EnemyBulletA": 
                 targetPool = enemyBulletA;
                 break;
@@ -167,8 +164,10 @@ public class ObjectManager : MonoBehaviour
             case "PlayerBulletB": 
                 targetPool = playerBulletB;
                 break;
+            case "FollowerBullet" :
+                targetPool = followerBullet;
+                break;
         }
-        Debug.Log(targetPool);
         for(int i=0;i<targetPool.Length;i++){
             if(!targetPool[i].activeSelf){
                 targetPool[i].SetActive(true);
@@ -207,9 +206,6 @@ public class ObjectManager : MonoBehaviour
             case "Coin": 
                 targetPool = coin;
                 break;
-            case "Sub": 
-                targetPool = sub;
-                break;
             case "EnemyBulletA": 
                 targetPool = enemyBulletA;
                 break;
@@ -221,6 +217,9 @@ public class ObjectManager : MonoBehaviour
                 break;
             case "PlayerBulletB": 
                 targetPool = playerBulletB;
+                break;
+            case "FollowerBullet":
+                targetPool = followerBullet;
                 break;
         }
         return targetPool;

@@ -16,6 +16,8 @@ public class PlayerMovement : MonoBehaviour
     public int maxRapid;
     public int bomb;
     public int maxBomb;
+    public GameObject[] followers;
+
     //Movement
     public float speed;
     public bool isStkLeft;
@@ -24,7 +26,6 @@ public class PlayerMovement : MonoBehaviour
     public bool isStkBottom;
 
     //Bullet
-    
     public float maxShotDelay;
     public float curShotDelay;
     public GameObject BombEffect;
@@ -80,7 +81,6 @@ public class PlayerMovement : MonoBehaviour
             return;
         if(curShotDelay < maxShotDelay)
             return;
-        
         switch(power){
             case 1 : 
                 GameObject bullet = obj.CreateObj("PlayerBulletA");
@@ -98,7 +98,7 @@ public class PlayerMovement : MonoBehaviour
                     rigidL.AddForce(Vector2.up*shotSpeed, ForceMode2D.Impulse);
                     rigidR.AddForce(Vector2.up*shotSpeed, ForceMode2D.Impulse);
                 break;
-            case 3 :
+            default :
                 GameObject bulletLL = obj.CreateObj("PlayerBulletA");
                 GameObject bulletCC = obj.CreateObj("PlayerBulletB"); 
                 GameObject bulletRR = obj.CreateObj("PlayerBulletA");
@@ -169,7 +169,18 @@ public class PlayerMovement : MonoBehaviour
         isBomb = false;
         BombEffect.SetActive(false);
     }
-
+    //Follower
+    void AddFollower(){
+        if(power == 4){
+            followers[0].SetActive(true);
+        }
+        else if(power == 5){
+            followers[1].SetActive(true);
+        }
+        else if(power == 6){
+            followers[2].SetActive(true);
+        }
+    }
     //Score
     public void AddScore(int score){
         gm.score += score;
@@ -250,6 +261,7 @@ public class PlayerMovement : MonoBehaviour
                         gm.score += 250;
                     else
                         power ++;
+                        AddFollower();
                     break;
                 case "Rapid" :
                     if(rapid == maxRapid)
