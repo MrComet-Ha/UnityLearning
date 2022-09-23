@@ -17,6 +17,13 @@ public class PlayerMovement : MonoBehaviour
     public int bomb;
     public int maxBomb;
     public GameObject[] followers;
+    public bool isInvincible;
+
+    //Mobile
+    public bool[] control;
+    public bool isControl;
+    public bool isBtnA;
+    public bool isBtnB;
 
     //Movement
     public float speed;
@@ -41,6 +48,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Awake()
     {
+
         gm.UpdateBombIcon();
         gm.UpdateLifeIcon();
         anim = GetComponent<Animator>();
@@ -56,15 +64,37 @@ public class PlayerMovement : MonoBehaviour
     }
 
     //Movement
+
+    public void PanelControl(int type){
+        for(int i = 0; i<9;i++){
+            control[i] = i == type;
+        }
+    }
+    public void PanelDown(){
+        isControl = true;
+    }
+    public void PanelUp(){
+        isControl = false;
+    }
     void Move(){
         float h = Input.GetAxisRaw("Horizontal");
-        if((isStkLeft && h == -1 )||(isStkRight && h == 1))
-            h = 0;
-        
         float v = Input.GetAxisRaw("Vertical");
-        if((isStkTop && v == 1)||(isStkBottom && v == -1))
+
+        if(control[0]){h=-1;v=1;}
+        if(control[1]){h=0;v=1;}
+        if(control[2]){h=1;v=1;}
+        if(control[3]){h=-1;v=0;}
+        if(control[4]){h=0;v=0;}
+        if(control[5]){h=1;v=0;}
+        if(control[6]){h=-1;v=-1;}
+        if(control[7]){h=0;v=-1;}
+        if(control[8]){h=1;v=-1;}
+
+        if((isStkLeft && h == -1 )||(isStkRight && h == 1)||!isControl)
+            h = 0;
+        if((isStkTop && v == 1)||(isStkBottom && v == -1)||!isControl)
             v = 0;
-        
+
         Vector3 curPos = transform.position;
         Vector3 nextPos = new Vector3(h,v,0) * speed * Time.deltaTime;
 
@@ -74,10 +104,21 @@ public class PlayerMovement : MonoBehaviour
             anim.SetInteger("Input",(int)h);
         }
     }
-
+ 
     //Shot
+    public void BtnADown(){
+        isBtnA = true;
+    }
+    public void BtnAUp(){
+        isBtnA = false;
+    }
+    public void BtnB(){
+        isBtnA = true;
+    }
     void Fire(){
-        if(!Input.GetKey(KeyCode.Space))
+        /*if(!Input.GetKey(KeyCode.Space))
+            return;*/
+        if(!isBtnA)
             return;
         if(curShotDelay < maxShotDelay)
             return;
@@ -119,7 +160,9 @@ public class PlayerMovement : MonoBehaviour
         curShotDelay += Time.deltaTime;
     }
     void Bomb(){
-        if(!Input.GetKeyDown(KeyCode.LeftShift))
+        /*if(!Input.GetKeyDown(KeyCode.LeftShift))
+            return;*/
+        if(!isBtnB)
             return;
         if(isBomb)
             return;
@@ -155,6 +198,8 @@ public class PlayerMovement : MonoBehaviour
         }
         GameObject[] bulletsA = obj.GetPool("EnemyBulletA");
         GameObject[] bulletsB = obj.GetPool("EnemyBulletB");
+        GameObject[] bossBulletsA = obj.GetPool("BossBulletA");
+        GameObject[] bossBulletsB = obj.GetPool("BossBulletB");
         for(int i = 0; i < bulletsA.Length; i++){
             if(bulletsA[i].activeSelf)
                 bulletsA[i].SetActive(false);
@@ -163,6 +208,15 @@ public class PlayerMovement : MonoBehaviour
             if(bulletsB[i].activeSelf)
                 bulletsB[i].SetActive(false);
         }
+        for(int i = 0; i < bossBulletsA.Length; i++){
+            if(bossBulletsA[i].activeSelf)
+                bossBulletsA[i].SetActive(false);
+        }
+        for(int i = 0; i < bossBulletsB.Length; i++){
+            if(bossBulletsB[i].activeSelf)
+                bossBulletsB[i].SetActive(false);
+        }
+        isBtnB=false;
         gm.UpdateBombIcon();
     }
     void BombOff(){
@@ -188,29 +242,46 @@ public class PlayerMovement : MonoBehaviour
 
     //Invincible
     public void SetInvincible(){
-        gameObject.layer = 8;
+        isInvincible = true;
         InvincibleSpr();
         Invoke("EndInvincible",2);
     }
     public void InvincibleSpr(){
         Color clean = new Color(1,1,1,1);
-        Color blank = new Color(1,1,1,0.4f);
-        if(gameObject.layer == 6){
+        Color blank = new Color(1,1,1,0.5f);
+        if(!isInvincible){
             spr.color = clean;
+            for(int i=0;i<followers.Length;i++){
+                if(followers[i].activeSelf){
+                    followers[i].GetComponent<SpriteRenderer>().color=clean;
+                }
+            }
             CancelInvoke("InvincibleSpr");
         }
         else
         {
-            
-            if(spr.color == clean)
+            if(spr.color == clean){
                 spr.color = blank;
-            else
+                for(int i=0;i<followers.Length;i++){
+                if(followers[i].activeSelf){
+                    followers[i].GetComponent<SpriteRenderer>().color=blank;
+                }
+            }
+                
+            }
+            else{
                 spr.color = clean;
-            Invoke("InvincibleSpr",0.2f);
+                for(int i=0;i<followers.Length;i++){
+                    if(followers[i].activeSelf){
+                        followers[i].GetComponent<SpriteRenderer>().color=clean;
+                    }
+                }
+                Invoke("InvincibleSpr",0.2f);
+            }
         }
     }
     void EndInvincible(){
-        gameObject.layer = 6;
+        isInvincible = false;
     }
     //Collision
     void OnTriggerEnter2D(Collider2D other)
@@ -234,11 +305,14 @@ public class PlayerMovement : MonoBehaviour
         }
         
         //Enemy
-        else if(other.gameObject.tag == "Enemy" || other.gameObject.tag == "EnemyBullet"){
+        else if((other.gameObject.tag == "Enemy" || other.gameObject.tag == "EnemyBullet")&&!isInvincible){
             if (isHit)
                 return;
             isHit = true;
-            other.gameObject.SetActive(false);
+            if(other.gameObject.GetComponent<EnemyMovement>() != null)
+                other.GetComponent<EnemyMovement>().OnHit(30);  
+            else
+                other.gameObject.SetActive(false);  
             if(life>0){
                 life --;
                 gm.PlayerRespawn();
@@ -246,6 +320,7 @@ public class PlayerMovement : MonoBehaviour
             else{
                 gm.GameOver();
             }
+            gm.CallExplosion(transform.position,"P");
             gameObject.SetActive(false);
         }
         

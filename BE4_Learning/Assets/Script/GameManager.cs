@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System;
 using System.IO;
 using System.Net.Mime;
@@ -10,34 +11,70 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    //Reference
-    public ObjectManager obj;
-    public String[] enemyObjs;
-    public Transform[] spawnPoints;
+    //UI
     public Image[] lifeImage;
     public Image[] bombImage;
     public TextMeshProUGUI scoreText;
-    public GameObject player;
     public GameObject gameOverSet;
-    public PlayerMovement pl;
+    public TextMeshProUGUI scoreEndGame;
+    public Animator stageAnim;
+    public Animator clearAnim;
+    public Animator fade;
 
-    //Data
-    public int score;
+
+    //Enemy
+    public ObjectManager obj;
+    public String[] enemyObjs;
+    public Transform[] spawnPoints;
+    public List<Spawn> spawnList;
     public float nextSpawnDelay;
     public float curSpawnDelay;
-
-    public List<Spawn> spawnList;
     public int spawnIndex;
     public bool spawnEnd;
+
+    //Player
+    public GameObject player;
+    public PlayerMovement pl;
+    public Transform defaultTrans;
+
+    //Data
+    public int stage;
+    public int score;
+
+
+
     void Awake()
     {
         spawnList = new List<Spawn>();
-        enemyObjs = new String[]{"EnemyS", "EnemyM", "EnemyL"};
-        ReadSpawnFile();
+        enemyObjs = new String[]{"EnemyS", "EnemyM", "EnemyL","EnemyB"};
         pl = player.GetComponent<PlayerMovement>();
+        StageStart();
     }
 
-    // Update is called once per frame
+    //StageManagement
+    void StageStart(){
+        //StageStartUI
+        stageAnim.SetTrigger("On");
+        stageAnim.GetComponent<TextMeshProUGUI>().text = "STAGE " + stage + "\nSTART!";
+        ReadSpawnFile();
+        //Fade In
+        fade.SetTrigger("In");
+    }
+    public void StageEnd(){
+        //StageEndUI
+        clearAnim.SetTrigger("On");
+        clearAnim.GetComponent<TextMeshProUGUI>().text = "STAGE " + stage + "\nCLEAR!";
+        //Fade Out
+        fade.SetTrigger("Out");
+        //Player Reposition
+        player.transform.position = defaultTrans.position;
+        //StageUp
+        stage++;
+        if(stage>2){
+            Invoke("GameOver",3f);
+        }
+        Invoke("StageStart",3f);
+    }
     void Update()
     {
         curSpawnDelay += Time.deltaTime;
@@ -56,7 +93,7 @@ public class GameManager : MonoBehaviour
     public void PlayerRespawnExq(){
         PlayerMovement pl = player.GetComponent<PlayerMovement>();
         pl.isHit = false;
-        player.transform.position = new Vector3(0,-4,0);
+        player.transform.position = defaultTrans.position;
         pl.SetInvincible();
         player.SetActive(true);
     }
@@ -79,12 +116,11 @@ public class GameManager : MonoBehaviour
         }
     }
     //Enemy
-
     void ReadSpawnFile(){
         spawnList.Clear();
         spawnIndex = 0;
         spawnEnd = false;
-        TextAsset textFile = Resources.Load("stage0") as TextAsset;
+        TextAsset textFile = Resources.Load("stage_" + stage) as TextAsset;
         StringReader strRead = new StringReader(textFile.text);
         
 
@@ -93,7 +129,6 @@ public class GameManager : MonoBehaviour
             if (line == null){
                 break;
             }
-            Debug.Log(line);
             Spawn spawnData = new Spawn();
             spawnData.delay =float.Parse(line.Split(',')[0]);
             spawnData.type =line.Split(',')[1];
@@ -115,14 +150,18 @@ public class GameManager : MonoBehaviour
             case "L" :
                 enemyIndex = 2;
                 break;
+            case "B" :
+                enemyIndex = 3;
+                break;
         }
         int enemyPoint = spawnList[spawnIndex].point;
         GameObject enemy = obj.CreateObj(enemyObjs[enemyIndex]);
-        enemy.transform.position = spawnPoints[enemyIndex].position;
+        enemy.transform.position = spawnPoints[enemyPoint].position;
         Rigidbody2D rigid = enemy.GetComponent<Rigidbody2D>();
         EnemyMovement enemyLogic = enemy.GetComponent<EnemyMovement>();
         enemyLogic.obj = obj;
         enemyLogic.player = player;
+        enemyLogic.gm = this;
         if(enemyPoint == 6 || enemyPoint == 8){
             rigid.velocity = new Vector2(1, enemyLogic.speed*(-1));
         }
@@ -147,8 +186,19 @@ public class GameManager : MonoBehaviour
         }
         nextSpawnDelay = spawnList[spawnIndex].delay;
     }
+
+    //Effect
+    public void CallExplosion(Vector3 pos, string type){
+        GameObject explosion = obj.CreateObj("Explosion");
+        Explosion expLogic = explosion.GetComponent<Explosion>();
+        explosion.transform.position = pos;
+        expLogic.StartExplosion(type);
+    }
+
+
     //GameOver
     public void GameOver(){
+        scoreEndGame.text = "Score : " + score;
         gameOverSet.SetActive(true);
     }
 
