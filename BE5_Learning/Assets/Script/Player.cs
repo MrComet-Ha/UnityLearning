@@ -4,19 +4,27 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+<<<<<<< HEAD
     //Variable
+=======
+>>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
     public float speed;
     public int jumpPow;
     public int jumpCount;
     public int dodgeCool;
+<<<<<<< HEAD
     public int swapCool;
     
     //Data
     //Key
+=======
+    
+>>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
     float hAxis;
     float vAxis;
     bool wDown;
     bool jDown;
+<<<<<<< HEAD
     bool iDown;
     bool sDown1;
     bool sDown2;
@@ -50,19 +58,35 @@ public class Player : MonoBehaviour
 
     
     void Awake()
+=======
+    bool isJump;
+    int jumpCnt;
+    bool isDodge;
+    
+    UnityEngine.Vector3 moveVec;
+    UnityEngine.Vector3 dodgeVec;
+    Animator anim;
+    Rigidbody rigid;
+    void Start()
+>>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
     {
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         ResetJump();
     }
 
+<<<<<<< HEAD
     //Main Logic
+=======
+    
+>>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
     void Update()
     {
         GetInput();
         Move();
         Jump();
         Dodge();
+<<<<<<< HEAD
         Interaction();
         Swap();
         Turn();
@@ -81,6 +105,18 @@ public class Player : MonoBehaviour
     }
 
     //Movement
+=======
+        Turn();
+    }
+
+    void GetInput(){
+        hAxis = Input.GetAxisRaw("Horizontal");
+        vAxis = Input.GetAxisRaw("Vertical");
+        wDown = Input.GetKey(KeyCode.LeftShift);
+        jDown = Input.GetKeyDown(KeyCode.Space);
+    }
+
+>>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
     void Move(){
         moveVec = new UnityEngine.Vector3(hAxis,0,vAxis).normalized;
         if(isDodge)
@@ -89,6 +125,7 @@ public class Player : MonoBehaviour
         anim.SetBool("isRun",moveVec != UnityEngine.Vector3.zero);
         anim.SetBool("isWalk",wDown);
     }
+<<<<<<< HEAD
     void Turn(){
         transform.LookAt(transform.position + moveVec);
     }
@@ -118,10 +155,42 @@ public class Player : MonoBehaviour
             Invoke("EndDodge",dodgeCool * Time.deltaTime);
         }
     }
+=======
+
+    void Turn(){
+        transform.LookAt(transform.position + moveVec);
+    }
+
+    void Jump(){
+        if(jDown && moveVec == UnityEngine.Vector3.zero && jumpCnt > 0 && !isDodge){
+            rigid.AddForce(Vector3.up * jumpPow,ForceMode.Impulse);
+            anim.SetBool("isJump",true);
+            anim.SetTrigger("doJump");
+            jumpCnt-=1;
+        }
+    }
+
+    void ResetJump(){
+        anim.SetBool("isJump",false);
+        jumpCnt = jumpCount;
+    }
+
+    void Dodge(){
+        if(jDown && moveVec != UnityEngine.Vector3.zero && jumpCnt > 0 && !isDodge){
+            dodgeVec = moveVec;
+            anim.SetTrigger("doDodge");
+            isDodge = true;
+            jumpCnt = 0;
+            Invoke("EndDodge",dodgeCool * Time.deltaTime);
+        }
+    }
+
+>>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
     void EndDodge(){
         ResetJump();
         isDodge = false;
     }
+<<<<<<< HEAD
 
     //Interaction
     void Interaction(){
@@ -163,12 +232,15 @@ public class Player : MonoBehaviour
     }
     //Collision
     //Floor
+=======
+>>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
     void OnCollisionEnter(Collision other)
     {
         if(other.gameObject.tag == "Floor"){
             ResetJump();
         }
     }
+<<<<<<< HEAD
     
     //Items
     void OnTriggerStay(Collider other)
@@ -182,4 +254,6 @@ public class Player : MonoBehaviour
     {
         nearObject = null;
     }
+=======
+>>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
 }
