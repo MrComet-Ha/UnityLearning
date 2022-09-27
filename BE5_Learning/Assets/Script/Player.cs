@@ -4,31 +4,26 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-<<<<<<< HEAD
     //Variable
-=======
->>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
     public float speed;
     public int jumpPow;
     public int jumpCount;
-    public int dodgeCool;
-<<<<<<< HEAD
-    public int swapCool;
+    public float dodgeCool;
+    public float swapCool;
+    public float reloadCool;
     
     //Data
     //Key
-=======
-    
->>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
     float hAxis;
     float vAxis;
     bool wDown;
     bool jDown;
-<<<<<<< HEAD
     bool iDown;
     bool sDown1;
     bool sDown2;
     bool sDown3;
+    bool fDown;
+    bool rDown;
 
     //Jump
     bool isJump;
@@ -39,59 +34,81 @@ public class Player : MonoBehaviour
     UnityEngine.Vector3 dodgeVec;
 
     //Weapon
+    public Weapon wp;
     public GameObject[] weapons;
     public bool[] hasWeapons;
-    GameObject equipWeapon;
+    public GameObject[] grenades;
+    Weapon equipWeapon;
     bool isSwap;
+
+    //Item
+    public int ammo;
+    public int coin;
+    public int health;
+    public int hasGre;
+    public int maxAmmo;
+    public int maxCoin;
+    public int maxHealth;
+    public int maxHasGre;
 
     //Movement
     UnityEngine.Vector3 moveVec;
     
     //Item
     GameObject nearObject;
+
+    //Attack
+    float atkDelay;
+    bool isAtkReady = true;
+    bool isReload;
+    public Camera followCamera;
+
+    //Physics
+    bool isBorder;
     
     //Reference
     Animator anim;
     Rigidbody rigid;
     
     
-
-    
     void Awake()
-=======
-    bool isJump;
-    int jumpCnt;
-    bool isDodge;
-    
-    UnityEngine.Vector3 moveVec;
-    UnityEngine.Vector3 dodgeVec;
-    Animator anim;
-    Rigidbody rigid;
-    void Start()
->>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
     {
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
         ResetJump();
     }
 
-<<<<<<< HEAD
     //Main Logic
-=======
-    
->>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
     void Update()
     {
         GetInput();
         Move();
         Jump();
         Dodge();
-<<<<<<< HEAD
         Interaction();
         Swap();
+        Attack();
+        Reload();
         Turn();
     }
 
+    //Physics
+
+    void FreezeRotation(){
+        rigid.angularVelocity = Vector3.zero;
+    }
+
+    void StopToWall(){
+        Debug.DrawRay(transform.position,moveVec * 5,Color.green);
+        isBorder = Physics.Raycast(transform.position,moveVec,5,LayerMask.GetMask("Wall"));
+    }
+    void FixedUpdate()
+    {
+        FreezeRotation();
+        StopToWall();
+    }
+
+    
     //GetInput
     void GetInput(){
         hAxis = Input.GetAxisRaw("Horizontal");
@@ -99,36 +116,41 @@ public class Player : MonoBehaviour
         wDown = Input.GetButtonDown("Walk");
         jDown = Input.GetButtonDown("Jump");
         iDown = Input.GetButtonDown("Interaction");
+        rDown = Input.GetButtonDown("Reload");
+        fDown = Input.GetButton("Fire1");
         sDown1 = Input.GetButtonDown("Swap1");
         sDown2 = Input.GetButtonDown("Swap2");
         sDown3 = Input.GetButtonDown("Swap3");
     }
 
-    //Movement
-=======
-        Turn();
-    }
-
-    void GetInput(){
-        hAxis = Input.GetAxisRaw("Horizontal");
-        vAxis = Input.GetAxisRaw("Vertical");
-        wDown = Input.GetKey(KeyCode.LeftShift);
-        jDown = Input.GetKeyDown(KeyCode.Space);
-    }
-
->>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
+    //Move
     void Move(){
         moveVec = new UnityEngine.Vector3(hAxis,0,vAxis).normalized;
         if(isDodge)
             moveVec = dodgeVec;
-        transform.position += moveVec * speed * (wDown ? 0.3f : 1f) *(isDodge ? 2f : 1f) * Time.deltaTime;
+        if(isSwap || !isAtkReady || isReload){
+            moveVec = UnityEngine.Vector3.zero;
+        }
+        if(!isBorder)
+            transform.position += moveVec * speed * (wDown ? 0.3f : 1f) *(isDodge ? 2f : 1f) * Time.deltaTime;
         anim.SetBool("isRun",moveVec != UnityEngine.Vector3.zero);
         anim.SetBool("isWalk",wDown);
     }
-<<<<<<< HEAD
     void Turn(){
+        //Keyboard Turn
         transform.LookAt(transform.position + moveVec);
+
+        //Mouse Turn
+        if(fDown){
+            Ray ray = followCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit rayHit;
+            if(Physics.Raycast(ray, out rayHit, 100)){
+                UnityEngine.Vector3 nextVec = rayHit.point - transform.position;
+                transform.LookAt(transform.position + nextVec);
+            }
+        }
     }
+
     //Jump
     void Jump(){
         if(jDown && moveVec == UnityEngine.Vector3.zero && jumpCnt > 0 && !isDodge && !isSwap){
@@ -147,50 +169,18 @@ public class Player : MonoBehaviour
 
     //Dodge
     void Dodge(){
-        if(jDown && moveVec != UnityEngine.Vector3.zero && !isJump && !isDodge && !isSwap){
+        if(jDown && moveVec != UnityEngine.Vector3.zero && !isJump && !isDodge && !isSwap && !isReload){
             dodgeVec = moveVec;
             anim.SetTrigger("doDodge");
             isDodge = true;
             CancelInvoke("EndDodge");
-            Invoke("EndDodge",dodgeCool * Time.deltaTime);
-        }
-    }
-=======
-
-    void Turn(){
-        transform.LookAt(transform.position + moveVec);
-    }
-
-    void Jump(){
-        if(jDown && moveVec == UnityEngine.Vector3.zero && jumpCnt > 0 && !isDodge){
-            rigid.AddForce(Vector3.up * jumpPow,ForceMode.Impulse);
-            anim.SetBool("isJump",true);
-            anim.SetTrigger("doJump");
-            jumpCnt-=1;
+            Invoke("EndDodge",dodgeCool);
         }
     }
 
-    void ResetJump(){
-        anim.SetBool("isJump",false);
-        jumpCnt = jumpCount;
-    }
-
-    void Dodge(){
-        if(jDown && moveVec != UnityEngine.Vector3.zero && jumpCnt > 0 && !isDodge){
-            dodgeVec = moveVec;
-            anim.SetTrigger("doDodge");
-            isDodge = true;
-            jumpCnt = 0;
-            Invoke("EndDodge",dodgeCool * Time.deltaTime);
-        }
-    }
-
->>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
     void EndDodge(){
-        ResetJump();
-        isDodge = false;
+        isDodge=false;
     }
-<<<<<<< HEAD
 
     //Interaction
     void Interaction(){
@@ -204,6 +194,40 @@ public class Player : MonoBehaviour
         }
     }
 
+    //Attack
+    void Attack(){
+        if(equipWeapon == null)
+            return;
+        
+        atkDelay += Time.deltaTime;
+        isAtkReady = equipWeapon.rate < atkDelay;
+
+        if(fDown && isAtkReady && !isDodge && !isSwap && !isReload){
+            equipWeapon.Use();
+            anim.SetTrigger(equipWeapon.type == Weapon.Type.Melee ? "doSwing" : "doShot");
+            atkDelay = 0;
+        }
+    }
+
+    void Reload(){
+        if(equipWeapon == null || equipWeapon.type == Weapon.Type.Melee || ammo == 0 || equipWeapon.curAmmo == equipWeapon.maxAmmo)
+            return;
+        if(rDown && !isJump && !isDodge && !isSwap && isAtkReady && !isReload){
+            anim.SetTrigger("doReload");
+            isReload = true;
+            Invoke("EndReload",reloadCool);
+        }
+    
+    }
+    void EndReload(){
+        ammo += equipWeapon.curAmmo;
+        equipWeapon.curAmmo = 0;
+        int reAmmo = ammo < equipWeapon.maxAmmo ? ammo : equipWeapon.maxAmmo;
+        equipWeapon.curAmmo = reAmmo;
+        ammo -= reAmmo;
+        isReload = false;
+    }
+    //Swap
     void Swap(){
         
         int weaponIndex = -1;
@@ -212,35 +236,32 @@ public class Player : MonoBehaviour
         if(sDown3 && hasWeapons[2]) weaponIndex = 2;
         if(weaponIndex == -1)
                 return;       
-        if((sDown1 || sDown2 || sDown3) && !isJump && !isDodge && !isSwap){
+        if((sDown1 || sDown2 || sDown3) && !isJump && !isDodge && !isSwap && !isReload){
             
             if(equipWeapon == weapons[weaponIndex]){
                 return;
             } 
             if(equipWeapon != null)
-                equipWeapon.SetActive(false);
-            equipWeapon = weapons[weaponIndex];
-            equipWeapon.SetActive(true);
+                equipWeapon.gameObject.SetActive(false);
+            equipWeapon = weapons[weaponIndex].GetComponent<Weapon>();
+            equipWeapon.gameObject.SetActive(true);
             anim.SetTrigger("doSwap");
             isSwap = true;
-            CancelInvoke("SwapCool");
-            Invoke("SwapCool",swapCool * Time.deltaTime);
+            CancelInvoke("EndSwap");
+            Invoke("EndSwap",swapCool);
         }
     }
-    void SwapCool(){
+    void EndSwap(){
         isSwap = false;
     }
     //Collision
     //Floor
-=======
->>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
     void OnCollisionEnter(Collision other)
     {
         if(other.gameObject.tag == "Floor"){
             ResetJump();
         }
     }
-<<<<<<< HEAD
     
     //Items
     void OnTriggerStay(Collider other)
@@ -250,10 +271,40 @@ public class Player : MonoBehaviour
         }
     }
 
+    void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Item"){
+            Item item = other.GetComponent<Item>();
+            switch(item.type){
+                case Item.Type.Ammo :
+                    ammo += item.value;
+                    if(ammo > maxAmmo)
+                        ammo = maxAmmo;
+                    break;
+                case Item.Type.Coin :
+                    coin += item.value;
+                    if(coin > maxCoin)
+                        coin = maxCoin;
+                    break;
+                case Item.Type.Heart :
+                    health += item.value;
+                    if(health > maxHealth)
+                        health = maxHealth;
+                    break;
+                case Item.Type.Grenade :
+                    grenades[hasGre].SetActive(true);
+                    hasGre += item.value;
+                    if(hasGre > maxHasGre)
+                        hasGre = maxHasGre;
+                    break;
+            }
+            other.gameObject.SetActive(false);
+        }
+    }
+
     void OnTriggerExit(Collider other)
     {
         nearObject = null;
     }
-=======
->>>>>>> 96a57047a3d2333489d3dfb152b615c5ff4fa63d
+
 }
