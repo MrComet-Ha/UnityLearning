@@ -14,12 +14,13 @@ public class Bullet : MonoBehaviour
         if(trail != null)
            trail.enabled = false;
     }
-    void OnCollisionEnter(Collision other)
-    {
+    void OnCollisionEnter(Collision other){
         if(other.gameObject.tag == "Floor"){
             Invoke("Disable",3f);
-        }
-        else if(other.gameObject.tag =="Wall"){
+        } 
+    }
+    void OnTriggerEnter(Collider other){
+        if(other.tag == "Wall" || other.tag == "Enemy"){
             Disable();
         }
     }
