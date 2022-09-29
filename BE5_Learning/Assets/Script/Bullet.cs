@@ -5,12 +5,14 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public TrailRenderer trail;
+    public bool isMelee;
     public int dmg;
 
     void OnDisable()
     {
         Rigidbody rigid = GetComponent<Rigidbody>();
-        rigid.velocity = UnityEngine.Vector3.zero;
+        if(rigid != null)
+            rigid.velocity = UnityEngine.Vector3.zero;
         if(trail != null)
            trail.enabled = false;
     }
@@ -25,6 +27,7 @@ public class Bullet : MonoBehaviour
         }
     }
     void Disable(){
-        gameObject.SetActive(false);
+        if(!isMelee)
+            gameObject.SetActive(false);
     }
 }

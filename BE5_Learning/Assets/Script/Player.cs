@@ -13,6 +13,10 @@ public class Player : MonoBehaviour
     public float reloadCool;
     
     //Data
+    public int health;
+    public int maxHealth;
+    bool isDamage;
+
     //Key
     float hAxis;
     float vAxis;
@@ -24,6 +28,7 @@ public class Player : MonoBehaviour
     bool sDown3;
     bool fDown;
     bool rDown;
+    bool gDown;
 
     //Jump
     bool isJump;
@@ -44,11 +49,9 @@ public class Player : MonoBehaviour
     //Item
     public int ammo;
     public int coin;
-    public int health;
     public int hasGre;
     public int maxAmmo;
     public int maxCoin;
-    public int maxHealth;
     public int maxHasGre;
 
     //Movement
@@ -69,12 +72,15 @@ public class Player : MonoBehaviour
     //Reference
     Animator anim;
     Rigidbody rigid;
+    MeshRenderer[] meshs;
+    public ObjectManager obj;
     
     
     void Awake()
     {
         anim = GetComponentInChildren<Animator>();
         rigid = GetComponent<Rigidbody>();
+        meshs = GetComponentsInChildren<MeshRenderer>();
         ResetJump();
     }
 
@@ -89,6 +95,7 @@ public class Player : MonoBehaviour
         Swap();
         Attack();
         Reload();
+        Grenade();
         Turn();
     }
 
@@ -118,6 +125,7 @@ public class Player : MonoBehaviour
         iDown = Input.GetButtonDown("Interaction");
         rDown = Input.GetButtonDown("Reload");
         fDown = Input.GetButton("Fire1");
+        gDown = Input.GetButtonDown("Fire2");
         sDown1 = Input.GetButtonDown("Swap1");
         sDown2 = Input.GetButtonDown("Swap2");
         sDown3 = Input.GetButtonDown("Swap3");
@@ -150,7 +158,6 @@ public class Player : MonoBehaviour
             }
         }
     }
-
     //Jump
     void Jump(){
         if(jDown && moveVec == UnityEngine.Vector3.zero && jumpCnt > 0 && !isDodge && !isSwap){
@@ -227,6 +234,27 @@ public class Player : MonoBehaviour
         ammo -= reAmmo;
         isReload = false;
     }
+
+    void Grenade(){
+        if(hasGre == 0)
+            return;
+        if(gDown && !isReload &&!isSwap){
+            Ray ray = followCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit rayHit;
+            if(Physics.Raycast(ray, out rayHit, 100)){
+                UnityEngine.Vector3 nextVec = rayHit.point - transform.position;
+            nextVec.y = 12;
+            GameObject instGre = obj.CreateObj("ThrowGrenade");
+            instGre.transform.position = transform.position;
+            Rigidbody rigidGre = instGre.GetComponent<Rigidbody>();
+            rigidGre.AddForce(nextVec , ForceMode.Impulse);
+            rigidGre.AddTorque(UnityEngine.Vector3.back *30 , ForceMode.Impulse);
+
+            hasGre -= 1;
+            grenades[hasGre].SetActive(false);
+            }
+        }
+    }
     //Swap
     void Swap(){
         
@@ -273,6 +301,7 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        //Item
         if(other.tag == "Item"){
             Item item = other.GetComponent<Item>();
             switch(item.type){
@@ -299,6 +328,29 @@ public class Player : MonoBehaviour
                     break;
             }
             other.gameObject.SetActive(false);
+        }
+        else if(other.tag == "EnemyBullet"){
+            if(!isDamage){
+                Bullet enemyBullet = other.GetComponent<Bullet>();
+                health -= enemyBullet.dmg;
+                if(other.GetComponent<Rigidbody>() != null)
+                    other.gameObject.SetActive(false);
+                StartCoroutine(OnDamage());
+            }
+        }
+    }
+
+    IEnumerator OnDamage(){
+        isDamage = true;
+        foreach(MeshRenderer mesh in meshs){
+            mesh.material.color = Color.yellow;
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        isDamage = false;
+        foreach(MeshRenderer mesh in meshs){
+            mesh.material.color = Color.white;
         }
     }
 

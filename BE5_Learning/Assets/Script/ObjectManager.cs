@@ -16,6 +16,11 @@ public class ObjectManager : MonoBehaviour
     public GameObject bulletHandGunPrefab;
     public GameObject bulletSubMachineGunPrefab;
     public GameObject bulletCasePrefab;
+    public GameObject throwGrenadePrefab;
+    public GameObject enemyAPrefab;
+    public GameObject enemyBPrefab;
+    public GameObject enemyCPrefab;
+    public GameObject enemyMissilePrefab;
 
     GameObject[] itemAmmo;
     GameObject[] itemHeart;
@@ -29,6 +34,11 @@ public class ObjectManager : MonoBehaviour
     GameObject[] bulletHandGun;
     GameObject[] bulletSubMachineGun;
     GameObject[] bulletCase;
+    GameObject[] throwGrenade;
+    GameObject[] enemyA;
+    GameObject[] enemyB;
+    GameObject[] enemyC;
+    GameObject[] enemyMissile;
 
     GameObject[] targetPool;
 
@@ -46,6 +56,11 @@ public class ObjectManager : MonoBehaviour
         bulletHandGun = new GameObject[100];
         bulletSubMachineGun = new GameObject[200];
         bulletCase = new GameObject[200];
+        throwGrenade = new GameObject[20];
+        enemyA = new GameObject[50];
+        enemyB = new GameObject[50];
+        enemyC = new GameObject[50];
+        enemyMissile = new GameObject[100];
 
         Generate();
     }
@@ -101,6 +116,26 @@ public class ObjectManager : MonoBehaviour
             bulletCase[i] = Instantiate(bulletCasePrefab);
             bulletCase[i].SetActive(false);
         }
+        for(int i=0;i<throwGrenade.Length;i++){
+            throwGrenade[i] = Instantiate(throwGrenadePrefab);
+            throwGrenade[i].SetActive(false);
+        }
+        for(int i=0;i<enemyA.Length;i++){
+            enemyA[i] = Instantiate(enemyAPrefab);
+            enemyA[i].SetActive(false);
+        }
+        for(int i=0;i<enemyB.Length;i++){
+            enemyB[i] = Instantiate(enemyBPrefab);
+            enemyB[i].SetActive(false);
+        }
+        for(int i=0;i<enemyC.Length;i++){
+            enemyC[i] = Instantiate(enemyCPrefab);
+            enemyC[i].SetActive(false);
+        }
+        for(int i=0;i<enemyMissile.Length;i++){
+            enemyMissile[i] = Instantiate(enemyMissilePrefab);
+            enemyMissile[i].SetActive(false);
+        }
     }
 
     public GameObject CreateObj(string type){
@@ -140,6 +175,21 @@ public class ObjectManager : MonoBehaviour
                 break;
             case "BulletCase" :
                 targetPool = bulletCase;
+                break;
+            case "ThrowGrenade" :
+                targetPool = throwGrenade;
+                break;
+            case "EnemyA" : 
+                targetPool = enemyA;
+                break;
+            case "EnemyB" : 
+                targetPool = enemyB;
+                break;
+            case "EnemyC" : 
+                targetPool = enemyC;
+                break;
+            case "EnemyMissile" : 
+                targetPool = enemyMissile;
                 break;
         }
         for(int i=0;i<targetPool.Length;i++){
@@ -188,6 +238,21 @@ public class ObjectManager : MonoBehaviour
                 break;
             case "BulletCase" :
                 targetPool = bulletCase;
+                break;
+            case "ThrowGrenade" :
+                targetPool = throwGrenade;
+                break;
+            case "EnemyA" : 
+                targetPool = enemyA;
+                break;
+            case "EnemyB" : 
+                targetPool = enemyB;
+                break;
+            case "EnemyC" : 
+                targetPool = enemyC;
+                break;
+            case "EnemyMissile" : 
+                targetPool = enemyMissile;
                 break;
         }
         return targetPool;
