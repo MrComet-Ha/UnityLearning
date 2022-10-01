@@ -12,6 +12,7 @@ public class BossMissile : Bullet
     void OnEnable()
     {
         nav = GetComponent<NavMeshAgent>();
+        Invoke("Disable",12f);
     }
 
     void Update(){

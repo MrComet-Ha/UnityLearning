@@ -28,8 +28,8 @@ public class BossRock : Bullet
 
     IEnumerator GainPower(){
         while(!isShot){
-            angularPower += angularPower*0.01f;
-            scaleValue += scaleValue*0.05f;
+            angularPower += 0.02f;
+            scaleValue += 0.002f;
             transform.localScale = Vector3.one * scaleValue;
             rigid.AddTorque(transform.right * angularPower,ForceMode.Acceleration);
             yield return null;

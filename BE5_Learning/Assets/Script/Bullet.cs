@@ -6,6 +6,7 @@ public class Bullet : MonoBehaviour
 {
     public TrailRenderer trail;
     public bool isMelee;
+    public bool isRock;
     public int dmg;
 
     void OnDisable()
@@ -17,16 +18,18 @@ public class Bullet : MonoBehaviour
            trail.enabled = false;
     }
     void OnCollisionEnter(Collision other){
-        if(other.gameObject.tag == "Floor"){
+        if(other.gameObject.tag == "Floor" && gameObject.layer == 10){
             Invoke("Disable",3f);
-        } 
+        }
+        else if(!isRock)
+            Disable();
     }
     void OnTriggerEnter(Collider other){
         if(other.tag == "Wall" || other.tag == "Enemy"){
             Disable();
         }
     }
-    void Disable(){
+    public void Disable(){
         if(!isMelee)
             gameObject.SetActive(false);
     }

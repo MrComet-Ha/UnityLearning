@@ -20,7 +20,10 @@ public class ObjectManager : MonoBehaviour
     public GameObject enemyAPrefab;
     public GameObject enemyBPrefab;
     public GameObject enemyCPrefab;
+    public GameObject enemyDPrefab;
     public GameObject enemyMissilePrefab;
+    public GameObject bossMissilePrefab;
+    public GameObject bossRockPrefab;
 
     GameObject[] itemAmmo;
     GameObject[] itemHeart;
@@ -38,6 +41,9 @@ public class ObjectManager : MonoBehaviour
     GameObject[] enemyA;
     GameObject[] enemyB;
     GameObject[] enemyC;
+    GameObject[] enemyD;
+    GameObject[] bossMissile;
+    GameObject[] bossRock;
     GameObject[] enemyMissile;
 
     GameObject[] targetPool;
@@ -60,7 +66,10 @@ public class ObjectManager : MonoBehaviour
         enemyA = new GameObject[50];
         enemyB = new GameObject[50];
         enemyC = new GameObject[50];
+        enemyD = new GameObject[1];
         enemyMissile = new GameObject[100];
+        bossMissile = new GameObject[100];
+        bossRock = new GameObject[50];
 
         Generate();
     }
@@ -132,9 +141,21 @@ public class ObjectManager : MonoBehaviour
             enemyC[i] = Instantiate(enemyCPrefab);
             enemyC[i].SetActive(false);
         }
+        for(int i=0;i<enemyD.Length;i++){
+            enemyD[i] = Instantiate(enemyDPrefab);
+            enemyD[i].SetActive(false);
+        }
         for(int i=0;i<enemyMissile.Length;i++){
             enemyMissile[i] = Instantiate(enemyMissilePrefab);
             enemyMissile[i].SetActive(false);
+        }
+        for(int i=0;i<bossMissile.Length;i++){
+            bossMissile[i] = Instantiate(bossMissilePrefab);
+            bossMissile[i].SetActive(false);
+        }
+        for(int i=0;i<bossRock.Length;i++){
+            bossRock[i] = Instantiate(bossRockPrefab);
+            bossRock[i].SetActive(false);
         }
     }
 
@@ -188,8 +209,17 @@ public class ObjectManager : MonoBehaviour
             case "EnemyC" : 
                 targetPool = enemyC;
                 break;
+            case "EnemyD" : 
+                targetPool = enemyC;
+                break;
             case "EnemyMissile" : 
                 targetPool = enemyMissile;
+                break;
+            case "BossMissile" :
+                targetPool = bossMissile;
+                break;
+            case "BossRock" :
+                targetPool = bossRock;
                 break;
         }
         for(int i=0;i<targetPool.Length;i++){
@@ -251,8 +281,17 @@ public class ObjectManager : MonoBehaviour
             case "EnemyC" : 
                 targetPool = enemyC;
                 break;
+            case "EnemyD" : 
+                targetPool = enemyC;
+                break;
             case "EnemyMissile" : 
                 targetPool = enemyMissile;
+                break;
+            case "BossMissile" :
+                targetPool = bossMissile;
+                break;
+            case "BossRock" :
+                targetPool = bossRock;
                 break;
         }
         return targetPool;
