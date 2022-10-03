@@ -57,8 +57,9 @@ public class Player : MonoBehaviour
     //Movement
     UnityEngine.Vector3 moveVec;
     
-    //Item
-    GameObject nearObject;
+    //Interaction
+    public GameObject nearObject;
+    bool isShop;
 
     //Attack
     float atkDelay;
@@ -160,7 +161,7 @@ public class Player : MonoBehaviour
     }
     //Jump
     void Jump(){
-        if(jDown && moveVec == UnityEngine.Vector3.zero && jumpCnt > 0 && !isDodge && !isSwap){
+        if(jDown && moveVec == UnityEngine.Vector3.zero && jumpCnt > 0 && !isDodge && !isSwap && !isShop){
             rigid.AddForce(Vector3.up * jumpPow,ForceMode.Impulse);
             anim.SetBool("isJump",true);
             anim.SetTrigger("doJump");
@@ -176,7 +177,7 @@ public class Player : MonoBehaviour
 
     //Dodge
     void Dodge(){
-        if(jDown && moveVec != UnityEngine.Vector3.zero && !isJump && !isDodge && !isSwap && !isReload){
+        if(jDown && moveVec != UnityEngine.Vector3.zero && !isJump && !isDodge && !isSwap && !isReload  && !isShop){
             dodgeVec = moveVec;
             anim.SetTrigger("doDodge");
             isDodge = true;
@@ -198,6 +199,11 @@ public class Player : MonoBehaviour
                 hasWeapons[itemIndex] = true;
                 nearObject.SetActive(false);
             }
+            else if(nearObject.tag == "Shop"){
+                Shop shop = nearObject.GetComponent<Shop>();
+                isShop = true;
+                shop.Enter(this);
+            }
         }
     }
 
@@ -209,7 +215,7 @@ public class Player : MonoBehaviour
         atkDelay += Time.deltaTime;
         isAtkReady = equipWeapon.rate < atkDelay;
 
-        if(fDown && isAtkReady && !isDodge && !isSwap && !isReload){
+        if(fDown && isAtkReady && !isDodge && !isSwap && !isReload && !isShop){
             equipWeapon.Use();
             anim.SetTrigger(equipWeapon.type == Weapon.Type.Melee ? "doSwing" : "doShot");
             atkDelay = 0;
@@ -219,7 +225,7 @@ public class Player : MonoBehaviour
     void Reload(){
         if(equipWeapon == null || equipWeapon.type == Weapon.Type.Melee || ammo == 0 || equipWeapon.curAmmo == equipWeapon.maxAmmo)
             return;
-        if(rDown && !isJump && !isDodge && !isSwap && isAtkReady && !isReload){
+        if(rDown && !isJump && !isDodge && !isSwap && isAtkReady && !isReload && !isShop){
             anim.SetTrigger("doReload");
             isReload = true;
             Invoke("EndReload",reloadCool);
@@ -238,7 +244,7 @@ public class Player : MonoBehaviour
     void Grenade(){
         if(hasGre == 0)
             return;
-        if(gDown && !isReload &&!isSwap){
+        if(gDown && !isReload &&!isSwap && !isShop){
             Ray ray = followCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit rayHit;
             if(Physics.Raycast(ray, out rayHit, 100)){
@@ -264,7 +270,7 @@ public class Player : MonoBehaviour
         if(sDown3 && hasWeapons[2]) weaponIndex = 2;
         if(weaponIndex == -1)
                 return;       
-        if((sDown1 || sDown2 || sDown3) && !isJump && !isDodge && !isSwap && !isReload){
+        if((sDown1 || sDown2 || sDown3) && !isJump && !isDodge && !isSwap && !isReload && !isShop){
             
             if(equipWeapon == weapons[weaponIndex]){
                 return;
@@ -294,7 +300,7 @@ public class Player : MonoBehaviour
     //Items
     void OnTriggerStay(Collider other)
     {
-        if(other.tag == "Weapon"){
+        if(other.tag == "Weapon" || other.tag == "Shop"){
             nearObject = other.gameObject;
         }
     }
@@ -333,10 +339,10 @@ public class Player : MonoBehaviour
             if(!isDamage){
                 Bullet enemyBullet = other.GetComponent<Bullet>();
                 health -= enemyBullet.dmg;
-                if(other.GetComponent<Rigidbody>() != null)
-                    other.gameObject.SetActive(false);
                 StartCoroutine(OnDamage());
             }
+            if(other.GetComponent<Rigidbody>() != null)
+                    other.gameObject.SetActive(false);
         }
     }
 
@@ -356,7 +362,14 @@ public class Player : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        nearObject = null;
+        if(other.tag == "Weapon")
+            nearObject = null;
+        else if(other.tag == "Shop"){
+            Shop shop = nearObject.GetComponent<Shop>();
+            isShop = false;
+            shop.Exit();
+            nearObject = null;
+        }
     }
 
 }

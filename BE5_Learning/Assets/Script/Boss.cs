@@ -75,7 +75,6 @@ public class Boss : Enemy
         StartCoroutine(Think());
     }
     IEnumerator RockShot(){
-        Debug.Log("Rock");
         isLook = false;
         anim.SetTrigger("doBigShot");
         yield return new WaitForSeconds(0.5f);

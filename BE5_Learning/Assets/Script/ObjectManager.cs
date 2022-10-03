@@ -182,7 +182,7 @@ public class ObjectManager : MonoBehaviour
             case "HandGun" :
                 targetPool = weaponHandGun;
                 break;
-            case "SubmachineGun" :
+            case "SubMachineGun" :
                 targetPool = weaponSubMachineGun;
                 break;
             case "Grenade" :
@@ -254,7 +254,7 @@ public class ObjectManager : MonoBehaviour
             case "HandGun" :
                 targetPool = weaponHandGun;
                 break;
-            case "SubmachineGun" :
+            case "SubMachineGun" :
                 targetPool = weaponSubMachineGun;
                 break;
             case "Grenade" :
