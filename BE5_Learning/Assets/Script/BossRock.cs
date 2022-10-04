@@ -11,7 +11,12 @@ public class BossRock : Bullet
 
     void OnEnable(){
         rigid=GetComponent<Rigidbody>();
-        StartCoroutine(CheckEnable());  
+        isShot = false;
+        angularPower = 2;
+        scaleValue = 0.1f;
+        transform.localScale = Vector3.one;
+        transform.rotation = Quaternion.identity;
+        StartCoroutine(CheckEnable());
     }
 
     IEnumerator CheckEnable(){

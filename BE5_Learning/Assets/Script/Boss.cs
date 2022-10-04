@@ -20,10 +20,16 @@ public class Boss : Enemy
 
     void OnEnable(){
         anim = GetComponentInChildren<Animator>();
+        isLook = true;
         curHealth = maxHealth;
         nav = GetComponent<NavMeshAgent>();
         nav.isStopped = true;
-        StartCoroutine(Think());
+        StartCoroutine(StartThink());
+    }
+    IEnumerator StartThink(){
+        yield return new WaitForSeconds(2f);
+        if(gameObject.activeSelf)
+            StartCoroutine(Think());
     }
     void Update()
     {
@@ -93,7 +99,7 @@ public class Boss : Enemy
         anim.SetTrigger("doTaunt");
         yield return new WaitForSeconds(1.5f);
         meleeArea.enabled = true;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
         meleeArea.enabled = false;
         yield return new WaitForSeconds(3f);
         isLook = true;

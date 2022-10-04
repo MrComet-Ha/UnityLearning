@@ -210,7 +210,7 @@ public class ObjectManager : MonoBehaviour
                 targetPool = enemyC;
                 break;
             case "EnemyD" : 
-                targetPool = enemyC;
+                targetPool = enemyD;
                 break;
             case "EnemyMissile" : 
                 targetPool = enemyMissile;

@@ -8,6 +8,8 @@ public class Shop : MonoBehaviour
     public RectTransform uiGroup;
     public Animator anim;
     public ObjectManager obj;
+    public AudioSource sndBuy;
+    public AudioSource sndNotEnough;
     
     public string[] itemName;
     public int[] itemPrice;
@@ -17,30 +19,36 @@ public class Shop : MonoBehaviour
 
     Player enterPlayer;
 
-    public void Enter(Player player)
-    {
+    void OnDisable(){
+        StopAllCoroutines();
+    }
+    public void Enter(Player player){
         enterPlayer = player;
         uiGroup.anchoredPosition = Vector3.zero;
     }
 
-    public void Exit()
-    {
+    public void Exit(){
         anim.SetTrigger("doHello");
         uiGroup.anchoredPosition = Vector3.down * 1000;
     }
 
     public void Buy(int i){
         int price = itemPrice[i];
-        if(price > enterPlayer.coin){
-            StopCoroutine("Talk");
-            StartCoroutine("Talk");
-            return;
+        if(enterPlayer != null){
+            if(price > enterPlayer.coin){
+                StopCoroutine("Talk");
+                StartCoroutine("Talk");
+                sndNotEnough.Play();
+                return;
+            }
+            enterPlayer.coin -= price;
+            Vector3 ranVec = Vector3.right * Random.Range(-3, 3) + Vector3.forward * Random.Range(-3, 3);
+            GameObject item = obj.CreateObj(itemName[i]);
+            item.transform.position = itemPos[i].position + ranVec;
+            item.transform.rotation = Quaternion.identity;
+            sndBuy.Play();
         }
-        enterPlayer.coin -= price;
-        Vector3 ranVec = Vector3.right * Random.Range(-3, 3) + Vector3.forward * Random.Range(-3, 3);
-        GameObject item = obj.CreateObj(itemName[i]);
-        item.transform.position = itemPos[i].position + ranVec;
-        item.transform.rotation = Quaternion.identity;
+        
     }
 
     IEnumerator Talk(){
