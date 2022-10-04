@@ -11,9 +11,11 @@ public class Item : MonoBehaviour
 
     Rigidbody rigid;
     SphereCollider sphere;
+    public AudioSource sndGet;
 
     void Awake()
     {
+        sndGet = GetComponentInChildren<AudioSource>();
         rigid = GetComponent<Rigidbody>();
         sphere = GetComponent<SphereCollider>();
     }

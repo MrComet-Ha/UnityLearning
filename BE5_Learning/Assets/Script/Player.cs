@@ -1,3 +1,4 @@
+using System.Dynamic;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +17,7 @@ public class Player : MonoBehaviour
     public int health;
     public int maxHealth;
     bool isDamage;
+    bool isDie;
 
     //Key
     float hAxis;
@@ -43,7 +45,7 @@ public class Player : MonoBehaviour
     public GameObject[] weapons;
     public bool[] hasWeapons;
     public GameObject[] grenades;
-    Weapon equipWeapon;
+    public Weapon equipWeapon;
     bool isSwap;
 
     //Item
@@ -70,11 +72,19 @@ public class Player : MonoBehaviour
     //Physics
     bool isBorder;
     
+    //Sound
+    public AudioSource sndJump;
+    public AudioSource sndGunShotPistol;
+    public AudioSource sndGunShotSMG;
+    public AudioSource sndSwing;
+    public AudioSource sndGet;
     //Reference
     Animator anim;
     Rigidbody rigid;
     MeshRenderer[] meshs;
     public ObjectManager obj;
+    public GameManager gm;
+    
     
     
     void Awake()
@@ -88,16 +98,18 @@ public class Player : MonoBehaviour
     //Main Logic
     void Update()
     {
-        GetInput();
-        Move();
-        Jump();
-        Dodge();
-        Interaction();
-        Swap();
-        Attack();
-        Reload();
-        Grenade();
-        Turn();
+        if(!isDie){
+            GetInput();
+            Move();
+            Jump();
+            Dodge();
+            Interaction();
+            Swap();
+            Attack();
+            Reload();
+            Grenade();
+            Turn();
+        }
     }
 
     //Physics
@@ -167,6 +179,7 @@ public class Player : MonoBehaviour
             anim.SetTrigger("doJump");
             isJump = true;
             jumpCnt-=1;
+            sndJump.Play();
         }
     }
     void ResetJump(){
@@ -197,12 +210,17 @@ public class Player : MonoBehaviour
                 Item item = nearObject.GetComponent<Item>();
                 int itemIndex = item.value;
                 hasWeapons[itemIndex] = true;
+                sndGet.clip=item.sndGet.clip;
+                sndGet.Play();
                 nearObject.SetActive(false);
             }
             else if(nearObject.tag == "Shop"){
                 Shop shop = nearObject.GetComponent<Shop>();
                 isShop = true;
                 shop.Enter(this);
+            }
+            else if(nearObject.tag == "StartZone"){
+                gm.StageStart();
             }
         }
     }
@@ -218,6 +236,16 @@ public class Player : MonoBehaviour
         if(fDown && isAtkReady && !isDodge && !isSwap && !isReload && !isShop){
             equipWeapon.Use();
             anim.SetTrigger(equipWeapon.type == Weapon.Type.Melee ? "doSwing" : "doShot");
+            switch(equipWeapon.type){
+                case Weapon.Type.Melee : sndSwing.Play();
+                    break;
+                case Weapon.Type.Range :
+                    if(equipWeapon.nameOfWeapon == "HG")
+                        sndGunShotPistol.Play();
+                    else if(equipWeapon.nameOfWeapon == "SMG")
+                        sndGunShotSMG.Play();
+                    break;
+            }
             atkDelay = 0;
         }
     }
@@ -300,7 +328,7 @@ public class Player : MonoBehaviour
     //Items
     void OnTriggerStay(Collider other)
     {
-        if(other.tag == "Weapon" || other.tag == "Shop"){
+        if(other.tag == "Weapon" || other.tag == "Shop" || other.tag == "StartZone"){
             nearObject = other.gameObject;
         }
     }
@@ -333,6 +361,8 @@ public class Player : MonoBehaviour
                         hasGre = maxHasGre;
                     break;
             }
+            sndGet.clip=item.sndGet.clip;
+            sndGet.Play();
             other.gameObject.SetActive(false);
         }
         else if(other.tag == "EnemyBullet"){
@@ -342,24 +372,34 @@ public class Player : MonoBehaviour
                 StartCoroutine(OnDamage());
             }
             if(other.GetComponent<Rigidbody>() != null)
-                    other.gameObject.SetActive(false);
+                other.gameObject.SetActive(false);
         }
     }
-
+    //Get Damaged
     IEnumerator OnDamage(){
         isDamage = true;
         foreach(MeshRenderer mesh in meshs){
             mesh.material.color = Color.yellow;
         }
-
+        if(health <= 0){
+            OnDie();
+            foreach(MeshRenderer mesh in meshs){
+                mesh.material.color = Color.grey;
+            }
+            yield break;
+        }
         yield return new WaitForSeconds(0.5f);
-
         isDamage = false;
         foreach(MeshRenderer mesh in meshs){
             mesh.material.color = Color.white;
         }
+        
     }
-
+    //Get Die
+    void OnDie(){
+        anim.SetTrigger("doDie");
+        isDie = true;
+    }
     void OnTriggerExit(Collider other)
     {
         if(other.tag == "Weapon")

@@ -8,8 +8,10 @@ public class Grenade : MonoBehaviour
     public GameObject meshObj;
     public GameObject exploEff;
     public Rigidbody rigid;
+    AudioSource sndBlow;
     void OnEnable()
     {
+        sndBlow = GetComponentInChildren<AudioSource>();
         meshObj.SetActive(true);
         exploEff.SetActive(false);
         trailEff.enabled = false;
@@ -28,7 +30,7 @@ public class Grenade : MonoBehaviour
         rigid.angularVelocity = UnityEngine.Vector3.zero;
         meshObj.SetActive(false);
         exploEff.SetActive(true);
-        
+        sndBlow.Play();
         RaycastHit[] rayHits = 
             Physics.SphereCastAll(
                 transform.position,

@@ -14,6 +14,7 @@ public class Enemy : MonoBehaviour
     //Mob stats
     public int maxHealth;
     public int curHealth;
+    public int score;
 
     //Mob AI
     public bool isChase;
@@ -23,9 +24,14 @@ public class Enemy : MonoBehaviour
     //Attack
     public BoxCollider meleeArea;
 
+    //Sound
+    public AudioSource sndBulletHit;
+    public AudioSource sndHammerHit;
+
     //Reference
     public Transform target;
     public ObjectManager obj;
+    public GameManager gm;
     public Rigidbody rigid;
     public BoxCollider boxCol;
     public MeshRenderer[] meshs;
@@ -37,6 +43,7 @@ public class Enemy : MonoBehaviour
         boxCol = GetComponent<BoxCollider>();
         meshs = GetComponentsInChildren<MeshRenderer>();
         nav = GetComponent<NavMeshAgent>();
+        anim = GetComponentInChildren<Animator>();
     }
 
     //Data Reset
@@ -58,7 +65,18 @@ public class Enemy : MonoBehaviour
         foreach(MeshRenderer mesh in meshs){
             mesh.material.color = Color.white;
         }
-        
+        if(gm!=null){
+            switch(enemyType){
+                    case Type.A : gm.enemyACnt -= 1;
+                        break;
+                    case Type.B : gm.enemyBCnt -= 1;
+                        break;
+                    case Type.C : gm.enemyCCnt -= 1;
+                        break;
+                    case Type.D : gm.enemyDCnt -= 1;
+                        break;
+            }
+        }    
     }
 
     void Update(){
@@ -82,7 +100,6 @@ public class Enemy : MonoBehaviour
         if(!isDead && enemyType != Type.D){
             float targetRadius = 1.5f;
             float targetRange = 3f;
-
             switch(enemyType){
                 case Type.A :
                     targetRadius = 1.5f;
@@ -167,12 +184,14 @@ public class Enemy : MonoBehaviour
             curHealth -= weapon.dmg;
             UnityEngine.Vector3 reactVec = transform.position - other.transform.position;
             StartCoroutine(OnDamaged(reactVec,false));
+            sndHammerHit.Play();
         }
         else if(other.tag == "Bullet"){
             Bullet bullet = other.GetComponent<Bullet>();
             curHealth -= bullet.dmg;
             UnityEngine.Vector3 reactVec = transform.position - other.transform.position;
             StartCoroutine(OnDamaged(reactVec,false));
+            sndBulletHit.Play();
         }
     }
     public void HitByGrenade(Vector3 explodePos){
@@ -189,15 +208,18 @@ public class Enemy : MonoBehaviour
     //Hit Logic
     
     IEnumerator OnDamaged(UnityEngine.Vector3 reactVec, bool isGre){
+        //Color change red
         foreach(MeshRenderer mesh in meshs){
             mesh.material.color = Color.red;
         }
         yield return new WaitForSeconds(0.1f);
+        //If enemy alive
         if(curHealth > 0){
             foreach(MeshRenderer mesh in meshs){
             mesh.material.color = Color.white;
         }
         }
+        //If enemy died
         else{
             foreach(MeshRenderer mesh in meshs){
             mesh.material.color = Color.gray;
@@ -207,7 +229,7 @@ public class Enemy : MonoBehaviour
             nav.enabled = false;
             isDead = true;
             anim.SetTrigger("doDie");
-
+            //Grenade kill
             if(isGre){
                 reactVec = reactVec.normalized;
                 reactVec += UnityEngine.Vector3.up * 3;
@@ -215,13 +237,64 @@ public class Enemy : MonoBehaviour
                 rigid.AddForce(reactVec * 5, ForceMode.Impulse);
                 rigid.AddTorque(reactVec * 15, ForceMode.Impulse);
             }
+            //Weapon Kill
             else{
                 reactVec = reactVec.normalized;
                 reactVec += UnityEngine.Vector3.up;
                 rigid.AddForce(reactVec * 5, ForceMode.Impulse);
             }
-            if(enemyType != Type.D)
-                Invoke("Disable",3f);
+            //Disable
+            Invoke("Disable",3f);
+            
+            //Add Score
+            gm.AddScore(score);
+
+            //Item Drop
+            int ranDrop = enemyType == Type.D ? 10 : Random.Range(0,10);
+            //Drop nothing
+            if(ranDrop < 6){
+                yield return null;
+            }
+            //Drop Item
+            else if(ranDrop >= 6){
+                //Item Physic
+                Vector3 ranVec = Vector3.up * Random.Range(2,5) + Vector3.right * Random.Range(-3,3);
+                //Coin
+                if(ranDrop <= 10){
+                    int drop = enemyType == Type.D ? 5 : Random.Range(1,3);
+                    for(int i = 0; i < drop; i++){
+                        int ranCoin = enemyType == Type.D ? 6 : Random.Range(0,6);
+                        GameObject coin;
+                        if(ranCoin < 4)
+                            coin = obj.CreateObj("BronzeCoin");
+                        else if(ranCoin < 6)
+                            coin = obj.CreateObj("SilverCoin");
+                        else
+                            coin = obj.CreateObj("GoldCoin");
+                        coin.transform.position = transform.position;
+                        coin.transform.rotation = Quaternion.identity;
+                        Rigidbody coinRigid = coin.GetComponent<Rigidbody>();
+                        coinRigid.AddForce(ranVec,ForceMode.Impulse);
+                    }  
+                }
+                //Supply
+                if(ranDrop == 10){
+                    int ranItem = Random.Range(0,3);
+                    GameObject item;
+                    switch(ranItem){
+                        case 2 : item = obj.CreateObj("Ammo");
+                            break;
+                        case 3 : item = obj.CreateObj("Grenade");
+                            break;
+                        default : item = obj.CreateObj("Health");
+                            break;
+                    }
+                    item.transform.position = transform.position;
+                    item.transform.rotation = Quaternion.identity;
+                    Rigidbody itemRigid = item.GetComponent<Rigidbody>();
+                    itemRigid.AddForce(ranVec,ForceMode.Impulse);
+                }
+            }
         }
         yield break;
     }
